@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imad SMOUK | Portfolio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0d0d1a;
+            --surface: #13131f;
+            --sidebar: #0f0f1c;
+            --orange: #ff5e3a;
+            --orange-glow: rgba(255,94,58,0.18);
+            --orange-dim: rgba(255,94,58,0.07);
+            --text: #e8e8f0;
+            --muted: rgba(232,232,240,0.45);
+            --border: rgba(255,255,255,0.06);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* ── LOADER ── */
+        #loader {
+            position: fixed; inset: 0;
+            background: var(--sidebar);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 99999;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        #loader.hide { opacity: 0; visibility: hidden; }
+
+        .loader-name {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            letter-spacing: 0.25em;
+            color: var(--orange);
+            margin-bottom: 28px;
+        }
+        .loader-bar-wrap {
+            width: 260px; height: 3px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px; overflow: hidden;
+        }
+        .loader-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff8c00, var(--orange));
+            box-shadow: 0 0 12px var(--orange);
+            animation: barFill 2.4s ease-in-out forwards;
+            width: 0;
+        }
+        .loader-sub {
+            font-family: 'Space Mono', monospace;
+            font-size: 9px; letter-spacing: 4px;
+            color: rgba(255,255,255,0.2);
+            margin-top: 16px;
+        }
+        @keyframes barFill { to { width: 100%; } }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 270px; height: 100vh;
+            background: var(--sidebar);
+            position: fixed; top: 0; left: 0;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 40px 0 30px;
+            border-right: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .profile-img {
+            width: 110px; height: 110px; border-radius: 50%;
+            object-fit: cover; object-position: center 5%;
+            border: 2px solid var(--orange);
+            box-shadow: 0 0 30px var(--orange-glow), 0 0 60px var(--orange-dim);
+        }
+
+        .sidebar-name {
+            font-size: 1rem; font-weight: 800;
+            letter-spacing: 0.06em;
+            margin-top: 14px;
+        }
+        .sidebar-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.6rem; letter-spacing: 3px;
+            color: var(--orange);
+            text-transform: uppercase;
+            margin-top: 5px; text-align: center;
+            padding: 0 20px;
+        }
+
+        .sidebar-divider {
+            width: 40px; height: 2px;
+            background: var(--orange);
+            margin: 22px auto;
+            opacity: 0.6;
+        }
+
+        .nav-links { width: 100%; }
+        .nav-links a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 13px 30px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.75rem; font-weight: 600;
+            letter-spacing: 2px; text-transform: uppercase;
+            transition: all 0.25s ease;
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #fff;
+            background: linear-gradient(90deg, var(--orange-glow), transparent);
+            border-left-color: var(--orange);
+        }
+        .nav-links a i { width: 16px; text-align: center; }
+
+        .sidebar-footer {
+            margin-top: auto;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.58rem; color: rgba(255,255,255,0.15);
+            letter-spacing: 2px; text-align: center;
+            padding: 0 20px;
+        }
+
+        /* ── MAIN CONTENT ── */
+        #mainContent { display: none; }
+
+        .content-area {
+            margin-left: 270px;
+            min-height: 100vh;
+        }
+
+        /* ── SECTIONS ── */
+        .section {
+            display: none;
+            padding: 70px 60px;
+            min-height: 100vh;
+            animation: fadeIn 0.5s ease;
+        }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: clamp(0.65rem, 1vw, 0.7rem);
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 4px; text-transform: uppercase;
+            color: var(--orange); margin-bottom: 10px;
+        }
+        .section-heading {
+            font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+            font-weight: 800; line-height: 1.1;
+            margin-bottom: 50px;
+        }
+        .section-heading span { color: var(--orange); }
+
+        /* ── HERO ── */
+        #hero {
+            display: none;
+            padding: 0;
+            align-items: stretch;
+            justify-content: center;
+            flex-direction: column;
+        }
+        #hero.active { display: flex; }
+
+        .hero-inner {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 70px 60px;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg-text {
+            position: absolute; right: -30px; top: 50%;
+            transform: translateY(-50%) rotate(90deg);
+            font-size: clamp(5rem, 12vw, 10rem);
+            font-weight: 800; letter-spacing: -0.05em;
+            color: rgba(255,94,58,0.04);
+            white-space: nowrap;
+            pointer-events: none; user-select: none;
+        }
+
+        .hero-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem; letter-spacing: 5px;
+            color: var(--orange); text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+
+        .hero-name {
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            font-weight: 800; line-height: 0.95;
+            letter-spacing: -0.02em;
+        }
+        .hero-name .orange { color: var(--orange); }
+
+        .hero-role {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+            letter-spacing: 4px; text-transform: uppercase;
+            color: var(--muted); margin-top: 20px;
+        }
+
+        .hero-desc {
+            max-width: 500px;
+            color: var(--muted); font-size: 0.95rem;
+            line-height: 1.7; margin-top: 28px;
+        }
+
+        .hero-btns {
+            display: flex; gap: 16px; flex-wrap: wrap;
+            margin-top: 42px;
+        }
+
+        .btn-primary-custom {
+            background: var(--orange);
+            color: #fff; font-weight: 700;
+            font-size: 0.75rem; letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 14px 32px; border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border: 2px solid var(--orange);
+        }
+        .btn-primary-custom:hover {
+            background: transparent;
+            color: var(--orange);
+            box-shadow: 0 0 20px var(--orange-glow);
+        }
+
+        .btn-outline-custom {
+            background: transparent;
+            color: var(--text); font-weight: 700;
+            font-size: 0.75rem; letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 14px 32px; border-radius: 4px;
+            text-decoration: none;
+            border: 2px solid var(--border);
+            transition: all 0.25s ease;
+        }
+        .btn-outline-custom:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        .hero-stats {
+            display: flex; gap: 40px;
+            margin-top: 60px;
+        }
+        .stat-num {
+            font-size: 2rem; font-weight: 800;
+            color: var(--orange);
+            font-family: 'Space Mono', monospace;
+        }
+        .stat-label {
+            font-size: 0.65rem; letter-spacing: 2px;
+            color: var(--muted); text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* ── CARDS ── */
+        .card-custom {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px; padding: 28px 32px;
+            margin-bottom: 20px;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .card-custom:hover {
+            border-color: rgba(255,94,58,0.3);
+            box-shadow: 0 4px 30px var(--orange-dim);
+        }
+
+        .card-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; }
+        .card-date {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem; letter-spacing: 2px;
+            color: var(--orange); margin-bottom: 16px;
+        }
+        .card-company {
+            font-size: 0.78rem; color: var(--muted); margin-bottom: 4px;
+        }
+
+        .card-custom ul {
+            padding-left: 18px;
+        }
+        .card-custom ul li {
+            color: var(--muted); font-size: 0.88rem;
+            line-height: 1.8; margin-bottom: 4px;
+        }
+
+        /* ── SKILLS ── */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .skill-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px; padding: 24px;
+            transition: border-color 0.25s ease;
+        }
+        .skill-card:hover { border-color: rgba(255,94,58,0.3); }
+
+        .skill-cat {
+            font-size: 0.6rem; letter-spacing: 3px;
+            text-transform: uppercase; color: var(--orange);
+            font-family: 'Space Mono', monospace;
+            margin-bottom: 14px;
+        }
+
+        .skill-item {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .skill-item:last-child { margin-bottom: 0; }
+
+        .skill-name { font-size: 0.85rem; font-weight: 600; }
+
+        .skill-bar-wrap {
+            width: 100px; height: 3px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px; overflow: hidden;
+        }
+        .skill-bar {
+            height: 100%; border-radius: 10px;
+            background: linear-gradient(90deg, #ff8c00, var(--orange));
+            transition: width 1.2s ease;
+        }
+
+        /* ── ABOUT ── */
+        .about-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; margin-top: 10px;
+        }
+
+        .info-line {
+            display: flex; gap: 14px; align-items: flex-start;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .info-line i { color: var(--orange); margin-top: 3px; width: 16px; }
+        .info-label {
+            font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--muted); font-family: 'Space Mono', monospace;
+            margin-bottom: 2px;
+        }
+        .info-val { font-size: 0.9rem; font-weight: 600; }
+
+        .soft-tag {
+            display: inline-block;
+            background: var(--orange-dim);
+            border: 1px solid rgba(255,94,58,0.2);
+            color: var(--orange); border-radius: 4px;
+            font-size: 0.75rem; font-weight: 600;
+            letter-spacing: 1px; padding: 6px 14px;
+            margin: 5px 5px 0 0;
+        }
+
+        /* ── PARCOURS TIMELINE ── */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin-top: 10px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute; left: 0; top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--orange), transparent);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            padding-left: 20px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute; left: -36px; top: 6px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: var(--orange);
+            box-shadow: 0 0 12px var(--orange-glow);
+        }
+
+        .timeline-type {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.6rem; letter-spacing: 3px;
+            text-transform: uppercase; color: var(--orange);
+            margin-bottom: 6px;
+        }
+
+        /* ── CONTACT ── */
+        .contact-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 20px; margin-bottom: 40px;
+        }
+
+        .contact-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px; padding: 24px;
+            display: flex; align-items: center; gap: 18px;
+            text-decoration: none; color: var(--text);
+            transition: all 0.25s ease;
+        }
+        .contact-card:hover {
+            border-color: rgba(255,94,58,0.4);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--orange-dim);
+        }
+
+        .contact-icon {
+            width: 48px; height: 48px; border-radius: 10px;
+            background: var(--orange-dim);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: var(--orange);
+            flex-shrink: 0;
+            border: 1px solid rgba(255,94,58,0.15);
+        }
+        .contact-label {
+            font-size: 0.6rem; letter-spacing: 2px;
+            text-transform: uppercase; color: var(--muted);
+            font-family: 'Space Mono', monospace;
+            margin-bottom: 4px;
+        }
+        .contact-val { font-size: 0.9rem; font-weight: 700; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .content-area { margin-left: 0; }
+            .section { padding: 40px 24px; }
+            .hero-inner { padding: 50px 24px; }
+            .about-grid, .contact-grid { grid-template-columns: 1fr; }
+            .hero-stats { gap: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+    <div style="text-align:center">
+        <div class="loader-name">IMAD SMOUK</div>
+        <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+        <div class="loader-sub">CHARGEMENT DU PORTFOLIO...</div>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div id="mainContent">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <img src="moi.jpg" alt="Imad SMOUK" class="profile-img">
+        <div class="sidebar-name">Imad SMOUK</div>
+        <div class="sidebar-title">Etudiant Systèmes & Réseaux</div>
+        <div class="sidebar-divider"></div>
+
+        <nav class="nav-links">
+            <a href="#" onclick="showSection('hero')" id="nav-hero" class="active">
+                <i class="fas fa-home"></i> Accueil
+            </a>
+            <a href="#" onclick="showSection('about')" id="nav-about">
+                <i class="fas fa-user"></i> À Propos
+            </a>
+            <a href="#" onclick="showSection('parcours')" id="nav-parcours">
+                <i class="fas fa-graduation-cap"></i> Formation
+            </a>
+            <a href="#" onclick="showSection('experience')" id="nav-experience">
+                <i class="fas fa-briefcase"></i> Expérience
+            </a>
+            <a href="#" onclick="showSection('skills')" id="nav-skills">
+                <i class="fas fa-code"></i> Compétences
+            </a>
+            <a href="#" onclick="showSection('contact')" id="nav-contact">
+                <i class="fas fa-envelope"></i> Contact
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            BTS SIO · SISR · 2025–2027
+        </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content-area">
+
+        <!-- ── ACCUEIL ── -->
+        <section id="hero" class="active">
+            <div class="hero-inner">
+                <div class="hero-bg-text">SMOUK</div>
+                <div class="hero-tag">Portfolio · 2025</div>
+                <h1 class="hero-name">
+                    IMAD<br>
+                    <span class="orange">SMOUK</span>
+                </h1>
+                <p class="hero-role">Technicien Systèmes &amp; Réseaux · BTS SIO SISR</p>
+                <p class="hero-desc">
+                    Étudiant motivé en BTS SIO option SISR, spécialisé en déploiement de parcs informatiques,
+                    administration réseau et support utilisateur. Actuellement en recherche d'alternance.
+                </p>
+                <div class="hero-btns">
+                    <a href="CV.pdf" target="_blank" class="btn-primary-custom">
+                        <i class="fas fa-file-pdf me-2"></i>Voir mon CV
+                    </a>
+                    <a href="#" onclick="showSection('contact')" class="btn-outline-custom">
+                        Me contacter
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div>
+                        <div class="stat-num">2+</div>
+                        <div class="stat-label">Années d'expérience</div>
+                    </div>
+                    <div>
+                        <div class="stat-num">2</div>
+                        <div class="stat-label">Stages réalisés</div>
+                    </div>
+                    <div>
+                        <div class="stat-num">CCNA</div>
+                        <div class="stat-label">Niveau Cisco</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── À PROPOS ── -->
+        <section id="about" class="section">
+            <div class="section-title">Qui suis-je</div>
+            <h2 class="section-heading">À <span>Propos</span></h2>
+
+            <div class="about-grid">
+                <div>
+                    <div class="card-custom" style="margin-bottom:0">
+                        <div class="info-line">
+                            <i class="fas fa-user"></i>
+                            <div>
+                                <div class="info-label">Nom complet</div>
+                                <div class="info-val">Imad SMOUK</div>
+                            </div>
+                        </div>
+                        <div class="info-line">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <div class="info-label">Email</div>
+                                <div class="info-val">imadsmk@icloud.com</div>
+                            </div>
+                        </div>
+                        <div class="info-line">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <div class="info-label">Téléphone</div>
+                                <div class="info-val">07 58 41 19 65</div>
+                            </div>
+                        </div>
+                        <div class="info-line">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <div class="info-label">Adresse</div>
+                                <div class="info-val">14 Hameau du Maine, 72700 Allonnes</div>
+                            </div>
+                        </div>
+                        <div class="info-line">
+                            <i class="fas fa-car"></i>
+                            <div>
+                                <div class="info-label">Mobilité</div>
+                                <div class="info-val">Permis B · Véhicule personnel</div>
+                            </div>
+                        </div>
+                        <div class="info-line" style="border:none">
+                            <i class="fas fa-search"></i>
+                            <div>
+                                <div class="info-label">Situation</div>
+                                <div class="info-val">Recherche d'alternance</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="card-custom">
+                        <div class="card-date" style="margin-bottom:14px">Présentation</div>
+                        <p style="color:var(--muted);font-size:0.9rem;line-height:1.8;margin-bottom:20px">
+                            Étudiant en 2ème année de BTS SIO option SISR au Lycée André Malraux d'Allonnes.
+                            Fort de deux stages à la DSI de la Mairie d'Allonnes, j'ai acquis une expérience
+                            concrète en déploiement de postes, gestion réseau et support utilisateur.
+                            Rigoureux et autonome, je suis à la recherche d'une alternance pour approfondir
+                            mes compétences techniques.
+                        </p>
+                        <div class="card-date" style="margin-bottom:12px">Soft Skills</div>
+                        <div>
+                            <span class="soft-tag"><i class="fas fa-handshake me-1"></i>Sens du service</span>
+                            <span class="soft-tag"><i class="fas fa-check-double me-1"></i>Rigueur</span>
+                            <span class="soft-tag"><i class="fas fa-user-cog me-1"></i>Autonomie</span>
+                            <span class="soft-tag"><i class="fas fa-sync-alt me-1"></i>Adaptabilité</span>
+                        </div>
+                    </div>
+
+                    <div class="card-custom" style="margin-top:20px">
+                        <div class="card-date" style="margin-bottom:12px">Langues</div>
+                        <div class="skill-item">
+                            <span class="skill-name"><i class="fas fa-flag me-2" style="color:var(--orange)"></i>Français</span>
+                            <div style="display:flex;align-items:center;gap:10px">
+                                <span style="font-size:0.7rem;color:var(--muted);font-family:'Space Mono',monospace">Courant</span>
+                                <div class="skill-bar-wrap"><div class="skill-bar" style="width:100%"></div></div>
+                            </div>
+                        </div>
+                        <div class="skill-item" style="margin-bottom:0">
+                            <span class="skill-name"><i class="fas fa-flag me-2" style="color:var(--orange)"></i>Anglais</span>
+                            <div style="display:flex;align-items:center;gap:10px">
+                                <span style="font-size:0.7rem;color:var(--muted);font-family:'Space Mono',monospace">Intermédiaire</span>
+                                <div class="skill-bar-wrap"><div class="skill-bar" style="width:55%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-custom" style="margin-top:20px">
+                        <div class="card-date" style="margin-bottom:12px">Centres d'intérêt</div>
+                        <div>
+                            <span class="soft-tag"><i class="fas fa-microchip me-1"></i>Veille technologique</span>
+                            <span class="soft-tag"><i class="fas fa-tools me-1"></i>Montage PC</span>
+                            <span class="soft-tag"><i class="fas fa-fist-raised me-1"></i>Boxe Anglaise</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── FORMATION ── -->
+        <section id="parcours" class="section">
+            <div class="section-title">Éducation</div>
+            <h2 class="section-heading">Ma <span>Formation</span></h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-type">En cours</div>
+                    <div class="card-custom" style="margin-bottom:0">
+                        <div class="card-title">BTS Services Informatiques aux Organisations</div>
+                        <div class="card-date">Option SISR · 2025 – 2027</div>
+                        <div class="card-company"><i class="fas fa-school me-2" style="color:var(--orange)"></i>Lycée André Malraux, Allonnes</div>
+                        <ul style="margin-top:14px">
+                            <li>Production et fourniture de services informatiques</li>
+                            <li>Maintenance d'infrastructures réseaux et logicielles</li>
+                            <li>Gestion de parc et cybersécurité du système d'information</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-type">Obtenu · Admis</div>
+                    <div class="card-custom" style="margin-bottom:0">
+                        <div class="card-title">Baccalauréat Professionnel</div>
+                        <div class="card-date">SEN – Systèmes Numériques · 2022 – 2025</div>
+                        <div class="card-company"><i class="fas fa-school me-2" style="color:var(--orange)"></i>Lycée Touchard-Washington, Le Mans</div>
+                        <ul style="margin-top:14px">
+                            <li>Mention : <strong>Admis</strong></li>
+                            <li>Spécialité systèmes numériques et informatique</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── EXPÉRIENCE ── -->
+        <section id="experience" class="section">
+            <div class="section-title">Expériences professionnelles</div>
+            <h2 class="section-heading">Mes <span>Stages</span></h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-type">Stage le plus récent</div>
+                    <div class="card-custom" style="margin-bottom:0">
+                        <div class="card-title">Stagiaire Technicien Systèmes et Réseaux</div>
+                        <div class="card-date">Octobre 2024 – Janvier 2025</div>
+                        <div class="card-company"><i class="fas fa-building me-2" style="color:var(--orange)"></i>DSI – Mairie d'Allonnes</div>
+                        <ul style="margin-top:14px">
+                            <li><strong>Déploiement :</strong> Installation de postes Windows 11 et intégration au domaine via GCPW</li>
+                            <li><strong>Réseau :</strong> Gestion de l'adressage IP, brassage de switchs et tests de connectivité</li>
+                            <li><strong>Documentation :</strong> Rédaction de procédures techniques et guides de support</li>
+                            <li><strong>Support :</strong> Assistance utilisateur et maintenance du parc informatique</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-type">1er Stage</div>
+                    <div class="card-custom" style="margin-bottom:0">
+                        <div class="card-title">Stagiaire Technicien Systèmes et Réseaux</div>
+                        <div class="card-date">Mars 2023 – Avril 2023</div>
+                        <div class="card-company"><i class="fas fa-building me-2" style="color:var(--orange)"></i>DSI – Mairie d'Allonnes</div>
+                        <ul style="margin-top:14px">
+                            <li><strong>Gestion de parc :</strong> Suivi des tickets et inventaire via GLPI</li>
+                            <li><strong>Virtualisation :</strong> Configuration de machines virtuelles sous VirtualBox</li>
+                            <li><strong>Support :</strong> Assistance technique et maintenance du parc informatique</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── COMPÉTENCES ── -->
+        <section id="skills" class="section">
+            <div class="section-title">Techniques & Outils</div>
+            <h2 class="section-heading">Mes <span>Compétences</span></h2>
+
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <div class="skill-cat"><i class="fas fa-network-wired me-2"></i>Réseaux</div>
+                    <div class="skill-item">
+                        <span class="skill-name">Cisco / CCNA 1</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Adressage IP</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Switchs / Brassage</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div>
+                    </div>
+                    <div class="skill-item" style="margin-bottom:0">
+                        <span class="skill-name">Tests de connectivité</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div>
+                    </div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-cat"><i class="fas fa-desktop me-2"></i>Systèmes</div>
+                    <div class="skill-item">
+                        <span class="skill-name">Windows 10/11</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:90%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Active Directory (GCPW)</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div>
+                    </div>
+                    <div class="skill-item" style="margin-bottom:0">
+                        <span class="skill-name">Droits d'accès</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:70%"></div></div>
+                    </div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-cat"><i class="fas fa-tools me-2"></i>Outils</div>
+                    <div class="skill-item">
+                        <span class="skill-name">GLPI (Ticketing)</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">VirtualBox</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Google Workspace</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div>
+                    </div>
+                    <div class="skill-item" style="margin-bottom:0">
+                        <span class="skill-name">Inventaire de parc</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div>
+                    </div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-cat"><i class="fas fa-shield-alt me-2"></i>Méthodes</div>
+                    <div class="skill-item">
+                        <span class="skill-name">Rédaction procédures</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:80%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span class="skill-name">Maintenance préventive</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:75%"></div></div>
+                    </div>
+                    <div class="skill-item" style="margin-bottom:0">
+                        <span class="skill-name">Déploiement de parc</span>
+                        <div class="skill-bar-wrap"><div class="skill-bar" style="width:85%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── CONTACT ── -->
+        <section id="contact" class="section">
+            <div class="section-title">Prendre contact</div>
+            <h2 class="section-heading">Me <span>Contacter</span></h2>
+
+            <p style="color:var(--muted);font-size:0.95rem;margin-bottom:36px;max-width:480px;line-height:1.7">
+                Disponible pour une alternance BTS SIO à partir de septembre 2025.
+                N'hésitez pas à me contacter par email ou téléphone.
+            </p>
+
+            <div class="contact-grid">
+                <a class="contact-card" href="mailto:imadsmk@icloud.com">
+                    <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                    <div>
+                        <div class="contact-label">Email</div>
+                        <div class="contact-val">imadsmk@icloud.com</div>
+                    </div>
+                </a>
+                <a class="contact-card" href="tel:0758411965">
+                    <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                    <div>
+                        <div class="contact-label">Téléphone</div>
+                        <div class="contact-val">07 58 41 19 65</div>
+                    </div>
+                </a>
+                <div class="contact-card" style="cursor:default">
+                    <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div>
+                        <div class="contact-label">Localisation</div>
+                        <div class="contact-val">Allonnes, 72700 (Sarthe)</div>
+                    </div>
+                </div>
+                <a class="contact-card" href="CV_étudiante_en_BTS_communication_simple_professionnel_gris.pdf" target="_blank">
+                    <div class="contact-icon"><i class="fas fa-file-pdf"></i></div>
+                    <div>
+                        <div class="contact-label">Curriculum Vitae</div>
+                        <div class="contact-val">Télécharger mon CV</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="card-custom" style="margin-top:10px;max-width:500px">
+                <div class="card-date" style="margin-bottom:10px">Disponibilité</div>
+                <div style="display:flex;align-items:center;gap:12px">
+                    <div style="width:10px;height:10px;border-radius:50%;background:#4cff6a;box-shadow:0 0 10px #4cff6a;flex-shrink:0"></div>
+                    <span style="font-size:0.9rem">Disponible pour une alternance dès <strong>septembre 2025</strong></span>
+                </div>
+                <div style="margin-top:12px;font-size:0.82rem;color:var(--muted)">
+                    <i class="fas fa-car me-2" style="color:var(--orange)"></i>
+                    Permis B · Véhicule personnel · Mobilité régionale
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    // ── Loader ──
+    setTimeout(() => {
+        document.getElementById('loader').classList.add('hide');
+        document.getElementById('mainContent').style.display = 'block';
+    }, 2600);
+
+    // ── Navigation ──
+    function showSection(id) {
+        // Hide all sections
+        document.querySelectorAll('.section, #hero').forEach(s => {
+            s.classList.remove('active');
+            s.style.display = '';
+        });
+
+        // Show target
+        const target = document.getElementById(id);
+        if (target) {
+            if (id === 'hero') {
+                target.style.display = 'flex';
+                target.classList.add('active');
+            } else {
+                target.style.display = 'block';
+                target.classList.add('active');
+            }
+        }
+
+        // Update nav
+        document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+        const activeNav = document.getElementById('nav-' + id);
+        if (activeNav) activeNav.classList.add('active');
+
+        return false;
+    }
+
+    // Prevent default on nav links
+    document.querySelectorAll('.nav-links a').forEach(a => {
+        a.addEventListener('click', function(e) { e.preventDefault(); });
+    });
+</script>
+</body>
+</html>
