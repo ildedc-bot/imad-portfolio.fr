@@ -10,155 +10,111 @@
 
     <style>
         :root {
-            --bg: #0d0d1a;
-            --surface: #13131f;
-            --sidebar: #0f0f1c;
-            --orange: #ff5e3a;
-            --orange-glow: rgba(255,94,58,0.18);
-            --orange-dim: rgba(255,94,58,0.07);
-            --text: #e8e8f0;
-            --muted: rgba(232,232,240,0.45);
-            --border: rgba(255,255,255,0.06);
+            --bg: #0d0d1a; --surface: #13131f; --sidebar: #0f0f1c;
+            --orange: #ff5e3a; --orange-glow: rgba(255,94,58,0.18);
+            --orange-dim: rgba(255,94,58,0.07); --text: #e8e8f0;
+            --muted: rgba(232,232,240,0.45); --border: rgba(255,255,255,0.06);
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
         body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; overflow-x: hidden; }
-
+        
         /* LOADER */
-        #loader { position: fixed; inset: 0; background: var(--sidebar); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 99999; transition: opacity 0.6s ease, visibility 0.6s ease; }
+        #loader { position: fixed; inset: 0; background: var(--sidebar); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 99999; transition: 0.6s; }
         #loader.hide { opacity: 0; visibility: hidden; }
-        .loader-name { font-family: 'Space Mono', monospace; font-size: clamp(1.2rem, 3vw, 1.6rem); letter-spacing: 0.25em; color: var(--orange); margin-bottom: 28px; }
-        .loader-bar-wrap { width: 260px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; }
-        .loader-bar { height: 100%; background: linear-gradient(90deg, #ff8c00, var(--orange)); box-shadow: 0 0 12px var(--orange); animation: barFill 2.4s ease-in-out forwards; width: 0; }
-        @keyframes barFill { to { width: 100%; } }
+        .loader-bar-wrap { width: 200px; height: 3px; background: rgba(255,255,255,0.1); margin-top: 20px; }
+        .loader-bar { height: 100%; background: var(--orange); animation: fill 2s forwards; width: 0; }
+        @keyframes fill { to { width: 100%; } }
 
         /* SIDEBAR */
-        .sidebar { width: 270px; height: 100vh; background: var(--sidebar); position: fixed; top: 0; left: 0; display: flex; flex-direction: column; align-items: center; padding: 40px 0 30px; border-right: 1px solid var(--border); z-index: 100; }
-        .profile-img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 2px solid var(--orange); box-shadow: 0 0 30px var(--orange-glow); }
-        .sidebar-name { font-size: 1rem; font-weight: 800; letter-spacing: 0.06em; margin-top: 14px; }
-        .sidebar-title { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 3px; color: var(--orange); text-transform: uppercase; margin-top: 5px; text-align: center; }
-        .nav-links { width: 100%; margin-top: 20px; }
-        .nav-links a { display: flex; align-items: center; gap: 12px; padding: 13px 30px; color: var(--muted); text-decoration: none; font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; border-left: 3px solid transparent; transition: all 0.25s ease; }
-        .nav-links a:hover, .nav-links a.active { color: #fff; background: linear-gradient(90deg, var(--orange-glow), transparent); border-left-color: var(--orange); }
+        .sidebar { width: 270px; height: 100vh; background: var(--sidebar); position: fixed; display: flex; flex-direction: column; align-items: center; padding: 40px 0; border-right: 1px solid var(--border); }
+        .profile-img { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--orange); }
+        .nav-links { width: 100%; margin-top: 30px; }
+        .nav-links a { display: flex; align-items: center; gap: 15px; padding: 15px 30px; color: var(--muted); text-decoration: none; font-size: 0.8rem; text-transform: uppercase; border-left: 3px solid transparent; transition: 0.3s; }
+        .nav-links a.active, .nav-links a:hover { color: white; background: var(--orange-dim); border-left-color: var(--orange); }
 
-        /* CONTENT */
-        .content-area { margin-left: 270px; min-height: 100vh; }
-        .section { display: none; padding: 70px 60px; min-height: 100vh; animation: fadeIn 0.5s ease; }
+        /* SECTIONS */
+        .content-area { margin-left: 270px; padding: 60px; }
+        .section { display: none; animation: fadeIn 0.5s forwards; }
         .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-
-        .section-title { font-size: 0.7rem; font-family: 'Space Mono', monospace; letter-spacing: 4px; text-transform: uppercase; color: var(--orange); margin-bottom: 10px; }
-        .section-heading { font-size: 2.5rem; font-weight: 800; margin-bottom: 50px; }
-        .section-heading span { color: var(--orange); }
-
-        /* CARDS */
-        .card-custom { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; margin-bottom: 20px; transition: 0.25s; }
-        .card-custom:hover { border-color: rgba(255,94,58,0.3); box-shadow: 0 4px 30px var(--orange-dim); }
-        .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
-        .card-date { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--orange); margin-bottom: 16px; letter-spacing: 2px; }
-
-        /* RESPONSIVE */
-        @media (max-width: 900px) {
-            .sidebar { display: none; }
-            .content-area { margin-left: 0; }
-            .section { padding: 40px 24px; }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .card-custom { background: var(--surface); border: 1px solid var(--border); padding: 30px; border-radius: 15px; margin-bottom: 20px; }
+        .btn-orange { background: var(--orange); color: white; padding: 12px 25px; border-radius: 5px; text-decoration: none; display: inline-block; font-weight: bold; }
+        
+        @media (max-width: 900px) { .sidebar { display: none; } .content-area { margin-left: 0; padding: 30px; } }
     </style>
 </head>
 <body>
 
 <div id="loader">
-    <div class="loader-name">IMAD SMOUK</div>
+    <div style="color:var(--orange); font-family:'Space Mono'; letter-spacing:5px;">IMAD SMOUK</div>
     <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
 </div>
 
 <div id="mainContent" style="display:none;">
     <aside class="sidebar">
         <img src="moi.jpg" alt="Imad" class="profile-img">
-        <div class="sidebar-name">Imad SMOUK</div>
-        <div class="sidebar-title">BTS SIO SISR</div>
+        <div style="margin-top:15px; font-weight:bold;">Imad SMOUK</div>
         <nav class="nav-links">
-            <a href="#" onclick="showSection('hero')" id="nav-hero" class="active"><i class="fas fa-home"></i> Accueil</a>
-            <a href="#" onclick="showSection('about')" id="nav-about"><i class="fas fa-user"></i> À Propos</a>
-            <a href="#" onclick="showSection('skills')" id="nav-skills"><i class="fas fa-code"></i> Compétences</a>
-            <a href="#" onclick="showSection('documents')" id="nav-documents"><i class="fas fa-file-alt"></i> Documents E5</a>
-            <a href="#" onclick="showSection('contact')" id="nav-contact"><i class="fas fa-envelope"></i> Contact</a>
+            <a href="#" onclick="show('hero')" id="nav-hero" class="active"><i class="fas fa-home"></i> Accueil</a>
+            <a href="#" onclick="show('about')" id="nav-about"><i class="fas fa-user"></i> À Propos</a>
+            <a href="#" onclick="show('docs')" id="nav-docs"><i class="fas fa-file-pdf"></i> Documents E5</a>
+            <a href="#" onclick="show('contact')" id="nav-contact"><i class="fas fa-envelope"></i> Contact</a>
         </nav>
     </aside>
 
     <main class="content-area">
-        <section id="hero" class="section active" style="display: flex; flex-direction: column; justify-content: center;">
+        <section id="hero" class="section active">
             <h1 style="font-size: 4rem; font-weight: 800;">IMAD <span style="color:var(--orange)">SMOUK</span></h1>
-            <p style="font-family: 'Space Mono'; letter-spacing: 3px; color: var(--muted);">TECHNICIEN SYSTÈMES & RÉSEAUX</p>
-            <div style="margin-top: 30px;">
-                <a href="CV.pdf" target="_blank" class="card-custom" style="text-decoration: none; color: white; display: inline-block;">Voir mon CV</a>
+            <p style="font-family:'Space Mono'; color:var(--muted);">BTS SIO SISR • LYCÉE ANDRÉ MALRAUX</p>
+            <div style="margin-top: 40px;">
+                <a href="CV.pdf" target="_blank" class="btn-orange">Voir mon CV</a>
             </div>
         </section>
 
         <section id="about" class="section">
-            <div class="section-title">Présentation</div>
-            <h2 class="section-heading">À <span>Propos</span></h2>
+            <h2 style="margin-bottom:30px;">À <span>Propos</span></h2>
             <div class="card-custom">
-                <p>Étudiant en BTS SIO SISR, passionné par l'administration réseaux et la cybersécurité. Actuellement focalisé sur le déploiement d'infrastructures et le support utilisateur.</p>
+                <p style="font-size: 1.1rem; line-height: 1.8;">
+                    Portfolio professionnel de <strong>Imad Smouk</strong>, étudiant en <strong>BTS SIO option SISR</strong> (Solutions d'Infrastructure, Systèmes et Réseaux) au <strong>Lycée André Malraux</strong> à Allonnes. 
+                    Passionné par l'informatique, je présente ici mes compétences acquises, mes projets réalisés et mon parcours dans le domaine des systèmes et réseaux.
+                </p>
             </div>
         </section>
 
-        <section id="skills" class="section">
-            <div class="section-title">Technique</div>
-            <h2 class="section-heading">Mes <span>Compétences</span></h2>
+        <section id="docs" class="section">
+            <h2 style="margin-bottom:30px;">Tableaux de <span>Compétences</span></h2>
             <div class="card-custom">
-                <p>• Cisco CCNA 1 & Adressage IP</p>
-                <p>• Windows Server & Active Directory</p>
-                <p>• GLPI & Gestion de parc informatique</p>
+                <h4>Tableau de Synthèse (Annexe 8-1)</h4>
+                <p style="color:var(--muted);">Obligatoire pour l'épreuve E5 du BTS SIO.</p>
+                <a href="documents/Tableau_de_synthese.pdf" target="_blank" style="color:var(--orange);">Télécharger le tableau PDF</a>
             </div>
-        </section>
-
-        <section id="documents" class="section">
-            <div class="section-title">BTS SIO</div>
-            <h2 class="section-heading">Preuves <span>& Documents</span></h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                <div class="card-custom">
-                    <div class="card-title">Tableau de Synthèse</div>
-                    <div class="card-date">ANNEXE 8-1</div>
-                    <a href="documents/Tableau_de_synthese.pdf" target="_blank" style="color:var(--orange); text-decoration: none; font-weight: bold;">[ OUVRIR LE PDF ]</a>
-                </div>
-                <div class="card-custom">
-                    <div class="card-title">Fiches de Situations</div>
-                    <div class="card-date">EPREUVE E5</div>
-                    <a href="documents/Fiches_E5.pdf" target="_blank" style="color:var(--orange); text-decoration: none; font-weight: bold;">[ TÉLÉCHARGER ]</a>
-                </div>
+            <div class="card-custom">
+                <h4>Fiches de Situations Professionnelles</h4>
+                <p style="color:var(--muted);">Détails techniques des missions réalisées en stage.</p>
+                <a href="documents/Fiches_E5.pdf" target="_blank" style="color:var(--orange);">Accéder aux fiches</a>
             </div>
         </section>
 
         <section id="contact" class="section">
-            <div class="section-title">Contact</div>
-            <h2 class="section-heading">Me <span>Joindre</span></h2>
+            <h2 style="margin-bottom:30px;">Me <span>Contacter</span></h2>
             <div class="card-custom">
-                <p>Email : imadsmk@icloud.com</p>
-                <p>Téléphone : 07 58 41 19 65</p>
+                <p><i class="fas fa-envelope color:var(--orange)"></i> imadsmk@icloud.com</p>
+                <p><i class="fas fa-phone color:var(--orange)"></i> 07 58 41 19 65</p>
             </div>
         </section>
     </main>
 </div>
 
 <script>
-    // Loader
     setTimeout(() => {
         document.getElementById('loader').classList.add('hide');
         document.getElementById('mainContent').style.display = 'block';
-    }, 2000);
+    }, 1500);
 
-    // Navigation simple
-    function showSection(id) {
-        document.querySelectorAll('.section').forEach(s => {
-            s.classList.remove('active');
-            s.style.display = 'none';
-        });
-        const target = document.getElementById(id);
-        target.classList.add('active');
-        target.style.display = (id === 'hero') ? 'flex' : 'block';
-
+    function show(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
         document.getElementById('nav-' + id).classList.add('active');
     }
